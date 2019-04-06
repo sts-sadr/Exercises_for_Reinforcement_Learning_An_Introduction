@@ -5,3 +5,5 @@ Exerciseのメモ:
 https://hackmd.io/s/SJVZK_EKN#
 
 ここには主に(Programming)と書かれたExerciseのコードを上げていきます
+
+コードは主にjupyter notebook形式にする予定
