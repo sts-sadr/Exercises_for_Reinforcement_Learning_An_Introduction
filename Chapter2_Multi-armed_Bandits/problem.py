@@ -28,7 +28,7 @@ class BanditProblem:
 # 定常なバンディット問題
 # 初めに平均0, 標準偏差problem_stdで生成した価値をずっと使う
 class StationaryBanditProblem(BanditProblem):
-    def __init__(self, k_arms, reward_std=1.0, problem_std=1.0):
+    def __init__(self, k_arms, reward_std, problem_std):
         super().__init__(k_arms, reward_std)
         self._true_qs = np.random.normal(0, problem_std, k_arms)
 
@@ -36,7 +36,7 @@ class StationaryBanditProblem(BanditProblem):
 # 非定常なバンディット問題
 # 初めに価値を0で初期化し, 以後毎ステップ平均0, 標準偏差change_stdが加算されて変化する
 class NonStationaryBanditProblem(BanditProblem):
-    def __init__(self, k_arms, reward_std=1.0, change_std=0.01):
+    def __init__(self, k_arms, reward_std, change_std):
         super().__init__(k_arms, reward_std)
         self._true_qs = np.zeros(k_arms)
         self._change_std = change_std
@@ -52,8 +52,7 @@ class NonStationaryBanditProblem(BanditProblem):
 # 内部にn_states個のStationaryBanditProblemを持ち, ランダムにその中の1つが状態として選ばれる
 # state_infoによって状態の情報を返すかを選べる. Falseなら常に0が返る
 class ContextualBanditProblem:
-    def __init__(self, k_arms, reward_std=1.0, problem_std=1.0,
-                 n_states=2, state_info=True):
+    def __init__(self, k_arms, reward_std, problem_std, n_states, state_info):
         self.k_arms = k_arms
         self._reward_std = reward_std
         self._problems = [StationaryBanditProblem(k_arms, reward_std, problem_std)
