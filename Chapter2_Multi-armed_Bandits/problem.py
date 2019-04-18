@@ -1,7 +1,6 @@
 import numpy as np
 
 
-# BanditProblem全体のための抽象クラス
 class BanditProblem:
     def __init__(self, k_arms, reward_std):
         self.k_arms = k_arms
@@ -19,7 +18,6 @@ class BanditProblem:
         raise NotImplementedError
 
 
-# [Stationary|NonStationary]BanditProblemのための抽象クラス
 class NonContextualBanditProblem(BanditProblem):
     def __init__(self, k_arms, reward_std):
         super(self, k_arms, reward_std).__init__()
@@ -73,7 +71,7 @@ class ContextualBanditProblem(BanditProblem):
         self._problems = [StationaryBanditProblem(k_arms, reward_std, problem_mean, problem_std)
                           for _ in range(n_states)]
         self.n_states = n_states
-        self._state = np.random.randint(k_arms)
+        self._state = np.random.randint(n_states)
         self.state_info = state_info
 
     def try_an_arm(self, k):
