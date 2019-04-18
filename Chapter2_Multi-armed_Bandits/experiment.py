@@ -23,6 +23,7 @@ class Experiment:
         self.initial_value = cfg.INITIAL_VALUE
         self.epsilon = cfg.EPSILON
         self.conf_coeff = cfg.CONF_COEFF
+        self.baseline_step_size = cfg.BASELINE_STEP_SIZE
 
         # other config
         self.n_runs = cfg.N_RUNS
@@ -36,7 +37,10 @@ class Experiment:
         1+1
 
     def _trial(self):
-        1+1
+        problem = self._set_problem()
+        solver = self._set_solver()
+
+        
 
     def _set_problem(self):
         if self.problem_name == 'stationary':

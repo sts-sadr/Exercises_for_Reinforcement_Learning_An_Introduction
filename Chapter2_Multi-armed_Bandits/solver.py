@@ -103,6 +103,3 @@ class PolicyGradient:
         one_hot = np.zeros(self.k_arms)
         one_hot[action] = 1
         return one_hot
-
-
-
