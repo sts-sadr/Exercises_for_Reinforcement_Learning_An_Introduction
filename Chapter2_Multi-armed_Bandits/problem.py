@@ -26,7 +26,7 @@ class BanditProblem:
 
 
 # 定常なバンディット問題
-# 初めに平均0, 標準偏差problem_stdで生成した価値をずっと使う
+# 初めに平均problem_mean, 標準偏差problem_stdで生成した価値をずっと使う
 class StationaryBanditProblem(BanditProblem):
     def __init__(self, k_arms, reward_std, problem_mean, problem_std):
         super().__init__(k_arms, reward_std)
@@ -34,7 +34,7 @@ class StationaryBanditProblem(BanditProblem):
 
 
 # 非定常なバンディット問題
-# 初めに価値を0で初期化し, 以後毎ステップ平均0, 標準偏差change_stdが加算されて変化する
+# 初めに価値を0で初期化し, 以後毎ステップ平均0, 標準偏差change_stdの独立値が各価値に加算されて変化する
 class NonStationaryBanditProblem(BanditProblem):
     def __init__(self, k_arms, reward_std, change_std):
         super().__init__(k_arms, reward_std)
