@@ -34,13 +34,40 @@ class Experiment:
             print(key, ':', value)
 
     def run(self):
-        1+1
+        mean_average_rewards = np.zeros(self.n_steps)
+        mean_optimal_action_rates = np.zeros(self.n_steps)
+
+        for _ in range(self.n_runs):
+            average_rewards, optimal_action_rates = self._trial()
+            mean_average_rewards += average_rewards
+            mean_optimal_action_rates += optimal_action_rates
+
+        mean_average_rewards /= self.n_runs
+        mean_optimal_action_rates /= self.n_runs
+        return mean_average_rewards, mean_optimal_action_rates
 
     def _trial(self):
         problem = self._set_problem()
         solver = self._set_solver()
 
-        
+        cumulative_reward = 0
+        optimal_action_count = 0
+        average_rewards = np.zeros(self.n_steps)
+        optimal_action_rates = np.zeros(self.n_steps)
+
+        state = problem.get_initial_state()
+        for step in range(self.n_steps):
+            action = solver(state)
+            reward, next_state = problem.try_an_arm(action)
+            solver.update(state, action, reward)
+            state = next_state
+
+            cumulative_reward += reward
+            optimal_action_count += (action == problem._get_optimal_action(state))
+            average_rewards[step] = cumulative_reward / (step + 1)
+            optimal_action_rates[step] = optimal_action_count / (step + 1)
+
+        return average_rewards, optimal_action_rates
 
     def _set_problem(self):
         if self.problem_name == 'stationary':
@@ -67,15 +94,15 @@ class Experiment:
         if self.solver_name == 'epsilon-greedy':
             solver = solver.EpsilonGreedy(self.n_states,
                                           self.k_arms,
+                                          self.step_size,
                                           self.initial_value,
-                                          self.epsilon,
-                                          self.step_size)
+                                          self.epsilon)
         elif self.solver_name == 'UCB1':
             solver = solver.UCB1(self.n_states,
                                  self.k_arms,
+                                 self.step_size,
                                  self.initial_value,
-                                 self.conf_coeff,
-                                 self.step_size)
+                                 self.conf_coeff)
         elif self.solver_name == 'policygradient':
             solver = solver.PolicyGradient(self.n_states,
                                            self.k_arms,

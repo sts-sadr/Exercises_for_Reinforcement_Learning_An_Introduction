@@ -14,7 +14,7 @@ REWARD_STD = 1.0  # 報酬の標準偏差
 PROBLEM_MEAN = 0  # for stationary, contextual. 真の価値の平均
 PROBLEM_STD = 1.0  # for stationary, contextual. 真の価値の標準偏差
 CHANGE_STD = 0.01  # for nonstationary. 加算される毎ステップの価値の変化の標準偏差
-N_STATES = 2  # for contextual. 状態数. 任意の整数 >= 1. contextual以外ではここの値に関わらず常に1
+N_STATES = 2  # for contextual. 状態数. 任意の整数 >= 1. contextual以外ではこの値に関わらず状態数は常に1
 STATE_INFO = True  # for contextual. 状態情報を返すかどうか
 
 

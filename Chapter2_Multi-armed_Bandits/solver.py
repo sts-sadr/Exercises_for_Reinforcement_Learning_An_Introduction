@@ -1,15 +1,43 @@
 import numpy as np
 
 
-class EpsilonGreedy:
-    # step_sizeはデフォルトで-1で, この状態だと(1/step数)を学習率に用いる
-    def __init__(self, n_states, k_arms, initial_value, epsilon, step_size):
+class Solver:
+    def __init__(self, n_states, k_arms, step_size):
         self.n_states = n_states
         self.k_arms = k_arms
-        self.pred_q_table = initial_value * np.ones((n_states, k_arms))
-        self.epsilon = epsilon
         self.step_size = step_size
         self.step_count = 0
+
+    def __call__(self, state):
+        # self.step_countのインクリメントを実装すること
+        raise NotImplementedError
+
+    def update(self, state, action, reward):
+        raise NotImplementedError
+
+    # step_sizeが-1だと, (1/ステップ数)を学習率αに用いる
+    def _get_alpha(self, step_size):
+        if step_size == -1:
+            alpha =  1 / (self.step_count + 1)
+        else:
+            alpha = step_size
+        return alpha
+
+
+class ValueIteration(Solver):
+    def __init__(self, n_states, k_arms, step_size, initial_value):
+        super().__init__(n_states, k_arms, step_size)
+        self.pred_q_table = initial_value * np.ones((n_states, k_arms))
+
+    def update(self, state, action, reward):
+        alpha = self._get_alpha(self.step_size)
+        self.pred_q_table[state][action] += alpha * (reward - self.pred_q_table[state][action])
+
+
+class EpsilonGreedy(ValueIteration):
+    def __init__(self, n_states, k_arms, step_size, initial_value, epsilon):
+        super().__init__(n_states, k_arms, step_size, initial_value)
+        self.epsilon = epsilon
 
     def __call__(self, state):
         is_greedy = np.random.rand() >= self.epsilon
@@ -24,24 +52,12 @@ class EpsilonGreedy:
         self.step_count += 1
         return action
 
-    def update(self, state, action, reward):
-        if self.step_size == -1:
-            alpha = 1 / (1 + self.step_count)
-        else:
-            alpha = self.step_size
 
-        self.pred_q_table[state][action] += alpha * (reward - self.pred_q_table[state][action])
-
-
-class UCB1:
-    def __init__(self, n_states, k_arms, initial_value, conf_coeff, step_size):
-        self.n_states = n_states
-        self.k_arms = k_arms
-        self.pred_q_table = initial_value * np.ones((n_states, k_arms))
+class UCB1(ValueIteration):
+    def __init__(self, n_states, k_arms, step_size, initial_value, conf_coeff):
+        super().__init__(n_states, k_arms, step_size, initial_value)
         self.conf_coeff = conf_coeff
         self.action_counts = np.zeros((n_states, k_arms)) + 1e-6
-        self.step_size = step_size
-        self.step_count = 0
 
     def __call__(self, state):
         confidence = np.sqrt(np.log(self.step_count) / self.action_counts[state])
@@ -52,23 +68,12 @@ class UCB1:
         self.step_count += 1
         return action
 
-    def update(self, state, action, reward):
-        if self.step_size == -1:
-            alpha = 1 / (1 + self.step_count)
-        else:
-            alpha = self.step_size
 
-        self.pred_q_table[state][action] += alpha * (reward - pred_q_table[state][action])
-
-
-class PolicyGradient:
+class PolicyGradient(Solver):
     def __init__(self, n_states, k_arms, step_size, baseline_step_size):
-        self.n_states = n_states
-        self.k_arms = k_arms
+        super().__init__(n_states, k_arms, step_size)
         self.preferences = np.zeros((n_states, k_arms))
         self.baseline = 0
-        self.step_size = step_size
-        self.step_count = 0
         self.baseline_step_size = baseline_step_size
 
     def __call__(self, state):
@@ -79,21 +84,13 @@ class PolicyGradient:
         return action
 
     def update(self, state, action, reward):
-        if self.baseline_step_size == -1:
-            baseline_alpha = 1 / (1 + self.step_count)
-        else:
-            baseline_alpha = self.baseline_step_size
-
-        self.baseline_step_size += baseline_alpha * reward
-
-        if self.step_size == -1:
-            alpha = 1 / (1 + self.step_count)
-        else:
-            alpha = self.step_size
+        baseline_alpha = self._get_alpha(self.baseline_step_size)
+        self.baseline += baseline_alpha * reward
 
         preference = self.preferences[state]
         probability = self._softmax(preference)
         one_hot = self._indicator(action)
+        alpha = self._get_alpha(self.step_size)
         self.preferences[state] += alpha(reward - self.baseline)(one_hot - probability)
 
     def _softmax(self, preference):

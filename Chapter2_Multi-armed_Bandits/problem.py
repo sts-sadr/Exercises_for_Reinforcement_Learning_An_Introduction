@@ -20,7 +20,7 @@ class BanditProblem:
 
 class NonContextualBanditProblem(BanditProblem):
     def __init__(self, k_arms, reward_std):
-        super(self, k_arms, reward_std).__init__()
+        super().__init__(k_arms, reward_std)
         self._true_qs = None  # 真の価値
 
     def try_an_arm(self, k):
@@ -67,7 +67,7 @@ class NonStationaryBanditProblem(NonContextualBanditProblem):
 # state_infoによって状態の情報を返すかを選べる. Falseなら常に0が返る
 class ContextualBanditProblem(BanditProblem):
     def __init__(self, k_arms, reward_std, problem_mean, problem_std, n_states, state_info):
-        super(k_arms, reward_std).__init__()
+        super().__init__(k_arms, reward_std)
         self._problems = [StationaryBanditProblem(k_arms, reward_std, problem_mean, problem_std)
                           for _ in range(n_states)]
         self.n_states = n_states
