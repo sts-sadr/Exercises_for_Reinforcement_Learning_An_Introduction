@@ -11,6 +11,7 @@ class Experiment:
         self.k_arms = cfg.K_ARMS
         self.reward_std = cfg.REWARD_STD
         self.n_states = cfg.N_STATES
+        self.problem_mean = cfg.PROBLEM_MEAN
         self.problem_std = cfg.PROBLEM_STD
         self.change_std = cfg.CHANGE_STD
         self.state_info = cfg.STATE_INFO
@@ -40,6 +41,7 @@ class Experiment:
         if self.problem_name == 'stationary':
             problem = problem.StationaryBanditProblem(self.k_arms,
                                                       self.reward_std,
+                                                      self.problem_mean,
                                                       self.problem_std)
         elif self.problem_name == 'nonstationary':
             problem = problem.NonStationaryBanditProblem(self.k_arms,
@@ -48,6 +50,7 @@ class Experiment:
         elif self.problem_name == 'contextual':
             problem = problem.ContextualBanditProblem(self.k_arms,
                                                       self.reward_std,
+                                                      self.problem_mean,
                                                       self.problem_std,
                                                       self.n_states,
                                                       self.state_info)

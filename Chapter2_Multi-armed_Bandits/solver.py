@@ -62,14 +62,47 @@ class UCB1:
 
 
 class PolicyGradient:
-    def __init__(self, n_states, k_arms, initial_value):
-        raise NotImplementedError
+    def __init__(self, n_states, k_arms, step_size, baseline_step_size):
+        self.n_states = n_states
+        self.k_arms = k_arms
+        self.preferences = np.zeros((n_states, k_arms))
+        self.baseline = 0
+        self.step_size = step_size
+        self.step_count = 0
+        self.baseline_step_size = baseline_step_size
 
     def __call__(self, state):
-        raise NotImplementedError
+        preference = self.preferences[state]
+        probability = self._softmax(preference)
+        action = np.random.choice(np.arange(self.k_arms), p=probability)
+        self.step_count += 1
+        return action
 
     def update(self, state, action, reward):
-        raise NotImplementedError
+        if self.baseline_step_size == -1:
+            baseline_alpha = 1 / (1 + self.step_count)
+        else:
+            baseline_alpha = self.baseline_step_size
+
+        self.baseline_step_size += baseline_alpha * reward
+
+        if self.step_size == -1:
+            alpha = 1 / (1 + self.step_count)
+        else:
+            alpha = self.step_size
+
+        preference = self.preferences[state]
+        probability = self._softmax(preference)
+        one_hot = self._indicator(action)
+        self.preferences[state] += alpha(reward - self.baseline)(one_hot - probability)
+
+    def _softmax(self, preference):
+        return np.exp(preference) / np.sum(np.exp(preference))
+
+    def _indicator(self, action):
+        one_hot = np.zeros(self.k_arms)
+        one_hot[action] = 1
+        return one_hot
 
 
 
