@@ -18,7 +18,7 @@ class Solver:
     # step_sizeが-1だと, (1/ステップ数)を学習率αに用いる
     def _get_alpha(self, step_size):
         if step_size == -1:
-            alpha =  1 / (self.step_count + 1)
+            alpha = 1 / (self.step_count + 1)
         else:
             alpha = step_size
         return alpha

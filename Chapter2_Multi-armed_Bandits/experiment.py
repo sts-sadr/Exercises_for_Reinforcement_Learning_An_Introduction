@@ -111,4 +111,3 @@ class Experiment:
         else:
             raise ValueError('solver_name should be "epsilon-greedy" or "UCB1" or "policygradient".')
         return solver
-
