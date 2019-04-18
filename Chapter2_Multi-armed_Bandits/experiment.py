@@ -2,6 +2,7 @@ import numpy as np
 
 import config as cfg
 import problem
+import solver
 
 
 class Experiment:
@@ -56,16 +57,27 @@ class Experiment:
                                                       self.state_info)
         else:
             raise ValueError('problem_name should be "stationary" or "nonstationary" or "contextual".')
+        return problem
 
     def _set_solver(self):
         if self.solver_name == 'epsilon-greedy':
-            1+1
+            solver = solver.EpsilonGreedy(self.n_states,
+                                          self.k_arms,
+                                          self.initial_value,
+                                          self.epsilon,
+                                          self.step_size)
         elif self.solver_name == 'UCB1':
-            1+1
+            solver = solver.UCB1(self.n_states,
+                                 self.k_arms,
+                                 self.initial_value,
+                                 self.conf_coeff,
+                                 self.step_size)
         elif self.solver_name == 'policygradient':
-            1+1
-
+            solver = solver.PolicyGradient(self.n_states,
+                                           self.k_arms,
+                                           self.step_size,
+                                           self.baseline_step_size)
         else:
             raise ValueError('solver_name should be "epsilon-greedy" or "UCB1" or "policygradient".')
-
+        return solver
 
