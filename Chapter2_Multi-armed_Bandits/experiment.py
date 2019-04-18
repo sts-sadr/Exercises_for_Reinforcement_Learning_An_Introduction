@@ -61,19 +61,19 @@ class Experiment:
         assert len(experiment_names) == n_experiments, \
             'The number of experiment_names should match the number of experiments'
 
-        plt.title('Average Reward')
-        plt.xlabel('step')
-        plt.ylabel('average reward')
+        plt.title('Average Reward over Step')
+        plt.xlabel('Step')
+        plt.ylabel('Average Reward')
         for i in range(n_experiments):
             plt.plot(self.mean_average_rewards_list[i], label=experiment_names[i])
         plt.legend()
         plt.show()
 
-        plt.title('Optimal Action Rate')
-        plt.xlabel('step')
-        plt.ylabel('optimal action rate')
+        plt.title('Optimal Action Rate over Step')
+        plt.xlabel('Step')
+        plt.ylabel('Optimal Action Rate(%)')
         for i in range(n_experiments):
-            plt.plot(self.mean_optimal_action_rates_list[i], label=experiment_names[i])
+            plt.plot(100*self.mean_optimal_action_rates_list[i], label=experiment_names[i])
         plt.legend()
         plt.show()
 
