@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 
 import config as cfg
@@ -29,6 +30,10 @@ class Experiment:
         self.n_runs = cfg.N_RUNS
         self.n_steps = cfg.N_STEPS
 
+        # logging
+        self.mean_average_rewards_list = []
+        self.mean_optimal_action_rates_list = []
+
     def print_config(self):
         for key, value in self.__dict__.items():
             print(key, ':', value)
@@ -44,7 +49,33 @@ class Experiment:
 
         mean_average_rewards /= self.n_runs
         mean_optimal_action_rates /= self.n_runs
+        self.mean_average_rewards_list.append(mean_average_rewards)
+        self.mean_optimal_actions_list.append(mean_optimal_action_rates)
         return mean_average_rewards, mean_optimal_action_rates
+
+    def show_results(self, experiment_names=None):
+        n_experiments = len(self.mean_average_rewards_list)
+        if experiment_names is None:
+            expeirment_names = ['experiment{}'.format(i)
+                                for i in range(n_experiments)]
+        assert len(experiment_names) == n_experiments, \
+            'The number of experiment_names should match the number of experiments'
+
+        plt.title('Average Reward')
+        plt.xlabel('step')
+        plt.ylabel('average reward')
+        for i in range(n_experiments):
+            plt.plot(self.mean_average_rewards_list[i], label=experiment_names[i])
+        plt.legend()
+        plt.show()
+
+        plt.title('Optimal Action Rate')
+        plt.xlabel('step')
+        plt.ylabel('optimal action rate')
+        for i in range(n_experiments):
+            plt.plot(self.mean_optimal_action_rates_list[i], label=experiment_names[i])
+        plt.legend()
+        plt.show()
 
     def _trial(self):
         problem = self._set_problem()
