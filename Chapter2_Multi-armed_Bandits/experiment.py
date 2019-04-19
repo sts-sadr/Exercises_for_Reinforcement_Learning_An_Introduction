@@ -33,11 +33,12 @@ class Experiment:
         self.mean_optimal_action_rates_record = {}
 
     def print_config(self):
-        print(self.params)
+        for key in self.params:
+            print('{}: {}'.format(key, self.params[key]))
 
     def set_config(self, param_name, value):
         if param_name not in self.params.keys():
-            raise ValueError('Wrong key name. Check key name by "print_config" method.')
+            raise ValueError('Wrong key. Check key list by "print_config" method.')
         self.params[param_name] = value
 
     def run(self, experiment_name):
