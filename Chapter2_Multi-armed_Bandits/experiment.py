@@ -32,14 +32,14 @@ class Experiment:
         self.n_steps = cfg.N_STEPS
 
         # logging
-        self.mean_average_rewards_list = []
-        self.mean_optimal_action_rates_list = []
+        self.mean_average_rewards_record = {}
+        self.mean_optimal_action_rates_record = {}
 
     def print_config(self):
         for key, value in self.__dict__.items():
             print(key, ':', value)
 
-    def run(self):
+    def run(self, experiment_name):
         mean_average_rewards = np.zeros(self.n_steps)
         mean_optimal_action_rates = np.zeros(self.n_steps)
 
@@ -50,31 +50,24 @@ class Experiment:
 
         mean_average_rewards /= self.n_runs
         mean_optimal_action_rates /= self.n_runs
-        self.mean_average_rewards_list.append(mean_average_rewards)
-        self.mean_optimal_action_rates_list.append(mean_optimal_action_rates)
+        self.mean_average_rewards_record[experiment_name] = mean_average_rewards
+        self.mean_optimal_action_rates_record[experiment_name] = mean_optimal_action_rates
         return mean_average_rewards, mean_optimal_action_rates
 
-    def show_results(self, experiment_names=None):
-        n_experiments = len(self.mean_average_rewards_list)
-        if experiment_names is None:
-            expeirment_names = ['experiment{}'.format(i)
-                                for i in range(n_experiments)]
-        assert len(experiment_names) == n_experiments, \
-            'The number of experiment_names should match the number of experiments'
-
+    def show_results(self):
         plt.title('Average Reward over Step')
         plt.xlabel('Step')
         plt.ylabel('Average Reward')
-        for i in range(n_experiments):
-            plt.plot(self.mean_average_rewards_list[i], label=experiment_names[i])
+        for experiment_name in self.mean_average_rewards_record:
+            plt.plot(self.mean_average_rewards_record[experiment_name], label=experiment_name)
         plt.legend()
         plt.show()
 
         plt.title('Optimal Action Rate over Step')
         plt.xlabel('Step')
         plt.ylabel('Optimal Action Rate(%)')
-        for i in range(n_experiments):
-            plt.plot(100*self.mean_optimal_action_rates_list[i], label=experiment_names[i])
+        for experiment_name in self.mean_optimal_action_rates_record:
+            plt.plot(100*self.mean_optimal_action_rates_record[experiment_name], label=experiment_name)
         plt.legend()
         plt.show()
 
