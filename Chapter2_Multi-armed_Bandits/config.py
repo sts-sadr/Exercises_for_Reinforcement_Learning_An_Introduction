@@ -36,5 +36,5 @@ BASELINE_STEP_SIZE = -1  # for policygradient. ベースライン更新のステ
 # ----------------------
 #      other config
 # ----------------------
-N_RUNS = 20  # エピソードを回す回数
+N_RUNS = 50  # エピソードを回す回数
 N_STEPS = 10000  # 1エピソードのステップ数

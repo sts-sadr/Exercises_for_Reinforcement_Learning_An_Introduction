@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from tqdm import tqdm
 
 import config as cfg
-import problem
-import solver
+from problem import StationaryBanditProblem, NonStationaryBanditProblem, ContextualBanditProblem
+from solver import EpsilonGreedy, UCB1, PolicyGradient
 
 
 class Experiment:
@@ -42,7 +43,7 @@ class Experiment:
         mean_average_rewards = np.zeros(self.n_steps)
         mean_optimal_action_rates = np.zeros(self.n_steps)
 
-        for _ in range(self.n_runs):
+        for _ in tqdm(range(self.n_runs)):
             average_rewards, optimal_action_rates = self._trial()
             mean_average_rewards += average_rewards
             mean_optimal_action_rates += optimal_action_rates
@@ -50,7 +51,7 @@ class Experiment:
         mean_average_rewards /= self.n_runs
         mean_optimal_action_rates /= self.n_runs
         self.mean_average_rewards_list.append(mean_average_rewards)
-        self.mean_optimal_actions_list.append(mean_optimal_action_rates)
+        self.mean_optimal_action_rates_list.append(mean_optimal_action_rates)
         return mean_average_rewards, mean_optimal_action_rates
 
     def show_results(self, experiment_names=None):
@@ -102,43 +103,43 @@ class Experiment:
 
     def _set_problem(self):
         if self.problem_name == 'stationary':
-            problem = problem.StationaryBanditProblem(self.k_arms,
-                                                      self.reward_std,
-                                                      self.problem_mean,
-                                                      self.problem_std)
+            problem = StationaryBanditProblem(self.k_arms,
+                                              self.reward_std,
+                                              self.problem_mean,
+                                              self.problem_std)
         elif self.problem_name == 'nonstationary':
-            problem = problem.NonStationaryBanditProblem(self.k_arms,
-                                                         self.reward_std,
-                                                         self.change_std)
+            problem = NonStationaryBanditProblem(self.k_arms,
+                                                 self.reward_std,
+                                                 self.change_std)
         elif self.problem_name == 'contextual':
-            problem = problem.ContextualBanditProblem(self.k_arms,
-                                                      self.reward_std,
-                                                      self.problem_mean,
-                                                      self.problem_std,
-                                                      self.n_states,
-                                                      self.state_info)
+            problem = ContextualBanditProblem(self.k_arms,
+                                              self.reward_std,
+                                              self.problem_mean,
+                                              self.problem_std,
+                                              self.n_states,
+                                              self.state_info)
         else:
             raise ValueError('problem_name should be "stationary" or "nonstationary" or "contextual".')
         return problem
 
     def _set_solver(self):
         if self.solver_name == 'epsilon-greedy':
-            solver = solver.EpsilonGreedy(self.n_states,
-                                          self.k_arms,
-                                          self.step_size,
-                                          self.initial_value,
-                                          self.epsilon)
+            solver = EpsilonGreedy(self.n_states,
+                                   self.k_arms,
+                                   self.step_size,
+                                   self.initial_value,
+                                   self.epsilon)
         elif self.solver_name == 'UCB1':
-            solver = solver.UCB1(self.n_states,
-                                 self.k_arms,
-                                 self.step_size,
-                                 self.initial_value,
-                                 self.conf_coeff)
+            solver = UCB1(self.n_states,
+                          self.k_arms,
+                          self.step_size,
+                          self.initial_value,
+                          self.conf_coeff)
         elif self.solver_name == 'policygradient':
-            solver = solver.PolicyGradient(self.n_states,
-                                           self.k_arms,
-                                           self.step_size,
-                                           self.baseline_step_size)
+            solver = PolicyGradient(self.n_states,
+                                    self.k_arms,
+                                    self.step_size,
+                                    self.baseline_step_size)
         else:
             raise ValueError('solver_name should be "epsilon-greedy" or "UCB1" or "policygradient".')
         return solver
