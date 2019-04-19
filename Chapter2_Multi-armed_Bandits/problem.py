@@ -79,11 +79,11 @@ class ContextualBanditProblem(BanditProblem):
         reward, _ = problem.try_an_arm(k)
         next_state = np.random.randint(self.n_states)
         self._state = next_state
-        if state_info:
+        if self.state_info:
             return reward, next_state
         else:
             return reward, 0
 
     def _get_optimal_action(self, state):
-        problem = self._problem[state]
+        problem = self._problems[state]
         return problem._get_optimal_action()
