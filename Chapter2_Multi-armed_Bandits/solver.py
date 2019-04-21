@@ -40,6 +40,7 @@ class EpsilonGreedy(ValueIteration):
         self.epsilon = epsilon
 
     def __call__(self, state):
+        self.step_count += 1
         is_greedy = np.random.rand() >= self.epsilon
         if is_greedy:
             # 行動価値が等しい行動が複数あるときは, その中からランダムに選ぶ
@@ -49,7 +50,6 @@ class EpsilonGreedy(ValueIteration):
             # 全ての行動からランダムに選ぶ
             action_candidates = np.arange(self.k_arms)
         action = np.random.choice(action_candidates)
-        self.step_count += 1
         return action
 
 
@@ -60,38 +60,39 @@ class UCB1(ValueIteration):
         self.action_counts = np.zeros((n_states, k_arms)) + 1e-6
 
     def __call__(self, state):
+        self.step_count += 1
         confidence = np.sqrt(np.log(self.step_count) / self.action_counts[state])
         pred_qs = self.pred_q_table[state] + self.conf_coeff * confidence
         action_candidates = np.arange(self.k_arms)[pred_qs == np.max(pred_qs)]
         action = np.random.choice(action_candidates)
         self.action_counts[state][action] += 1
-        self.step_count += 1
         return action
 
 
 class PolicyGradient(Solver):
-    def __init__(self, n_states, k_arms, step_size, baseline_step_size):
+    def __init__(self, n_states, k_arms, step_size, baseline_step_size, with_baseline):
         super().__init__(n_states, k_arms, step_size)
         self.preferences = np.zeros((n_states, k_arms))
         self.baseline = 0
         self.baseline_step_size = baseline_step_size
+        self.with_baseline = with_baseline
 
     def __call__(self, state):
+        self.step_count += 1
         preference = self.preferences[state]
         probability = self._softmax(preference)
         action = np.random.choice(np.arange(self.k_arms), p=probability)
-        self.step_count += 1
         return action
 
     def update(self, state, action, reward):
         baseline_alpha = self._get_alpha(self.baseline_step_size)
-        self.baseline += baseline_alpha * reward
+        self.baseline += baseline_alpha * (reward - self.baseline)
 
         preference = self.preferences[state]
         probability = self._softmax(preference)
         one_hot = self._indicator(action)
         alpha = self._get_alpha(self.step_size)
-        self.preferences[state] += alpha(reward - self.baseline)(one_hot - probability)
+        self.preferences[state] += alpha * (reward - self.with_baseline*self.baseline) * (one_hot - probability)
 
     def _softmax(self, preference):
         return np.exp(preference) / np.sum(np.exp(preference))

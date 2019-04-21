@@ -24,6 +24,7 @@ class Experiment:
                        'epsilon': cfg.EPSILON,
                        'conf_coeff': cfg.CONF_COEFF,
                        'baseline_step_size': cfg.BASELINE_STEP_SIZE,
+                       'with_baseline': cfg.WITH_BASELINE,
                        'n_runs': cfg.N_RUNS,
                        'n_steps': cfg.N_STEPS
                        }
@@ -100,7 +101,7 @@ class Experiment:
     def _set_problem(self):
         if self.params['problem_name'] == 'stationary':
             problem = StationaryBanditProblem(self.params['k_arms'],
-                                              self.parmas['reward_std'],
+                                              self.params['reward_std'],
                                               self.params['problem_mean'],
                                               self.params['problem_std'])
         elif self.params['problem_name'] == 'nonstationary':
@@ -135,7 +136,8 @@ class Experiment:
             solver = PolicyGradient(self.params['n_states'],
                                     self.params['k_arms'],
                                     self.params['step_size'],
-                                    self.params['baseline_step_size'])
+                                    self.params['baseline_step_size'],
+                                    self.params['with_baseline'])
         else:
             raise ValueError('solver_name should be "epsilon-greedy" or "UCB1" or "policygradient".')
         return solver

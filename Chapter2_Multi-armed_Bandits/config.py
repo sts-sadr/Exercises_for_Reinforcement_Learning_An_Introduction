@@ -31,6 +31,7 @@ INITIAL_VALUE = 0.0  # for epsilon-greedy, UCB1. 価値推定時の初期値
 EPSILON = 0.1  # for epsilon-greedy. 探索率
 CONF_COEFF = 1  # for UCB1. confidence項にかかる係数
 BASELINE_STEP_SIZE = -1  # for policygradient. ベースライン更新のステップサイズ. -1でサンプル平均
+WITH_BASELINE = True  # for policygradient. ベースラインを使うかどうか
 
 
 # ----------------------
