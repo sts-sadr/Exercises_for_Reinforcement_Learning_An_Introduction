@@ -38,4 +38,4 @@ WITH_BASELINE = True  # for policygradient. ベースラインを使うかどう
 #      other config
 # ----------------------
 N_RUNS = 50  # エピソードを回す回数
-N_STEPS = 10000  # 1エピソードのステップ数
+N_STEPS = 1000  # 1エピソードのステップ数

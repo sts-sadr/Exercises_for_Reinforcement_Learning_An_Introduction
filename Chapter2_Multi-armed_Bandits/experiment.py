@@ -58,17 +58,17 @@ class Experiment:
         return mean_average_rewards, mean_optimal_action_rates
 
     def show_results(self):
-        plt.title('Average Reward over Step')
-        plt.xlabel('Step')
-        plt.ylabel('Average Reward')
+        plt.title('Average reward')
+        plt.xlabel('Steps')
+        plt.ylabel('Average reward')
         for experiment_name in self.mean_average_rewards_record:
             plt.plot(self.mean_average_rewards_record[experiment_name], label=experiment_name)
         plt.legend()
         plt.show()
 
-        plt.title('Optimal Action Rate over Step')
-        plt.xlabel('Step')
-        plt.ylabel('Optimal Action Rate(%)')
+        plt.title('Optimal action(%)')
+        plt.xlabel('Steps')
+        plt.ylabel('Optimal action(%)')
         for experiment_name in self.mean_optimal_action_rates_record:
             plt.plot(100*self.mean_optimal_action_rates_record[experiment_name], label=experiment_name)
         plt.legend()
